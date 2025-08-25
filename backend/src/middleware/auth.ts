@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import User from '../models/User';
+import { config } from '../config/env';
 
 
 export const protect = async (
@@ -23,7 +24,7 @@ export const protect = async (
         }
 
         try {
-            const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { id: string };
+            const decoded = jwt.verify(token, config.jwtSecret as string) as { id: string };
 
             const user = await User.findById(decoded.id).select('-password');
 
