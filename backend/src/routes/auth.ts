@@ -1,6 +1,7 @@
 import express from 'express';
-import { register, login } from '../controllers/auth';
+import { register, login, getMe } from '../controllers/auth';
 import { validateHandler } from '../middleware/validateHandler';
+import { authorize, protect } from '../middleware/auth';
 import { loginSchema, registerSchema } from '../dtos/authDto';
 
 const router = express.Router();
@@ -16,6 +17,12 @@ router.post(
     loginSchema,
     validateHandler,
     login
+);
+
+router.get(
+    '/me',
+    protect,
+    getMe
 );
 
 export default router;

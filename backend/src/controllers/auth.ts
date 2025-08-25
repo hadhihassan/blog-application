@@ -8,6 +8,8 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
         const { name, email, password } = req.body;
 
         const existingUser = await User.findOne({ email });
+        console.log('user exising ', existingUser);
+        
         if (existingUser) {
             return res.status(400).json({
                 success: false,
@@ -38,6 +40,7 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
 // Login user
 export const login = async (req: Request, res: Response, next: NextFunction) => {
     try {
+    
         const { email, password } = req.body;
 
         if (!email || !password) {
@@ -77,4 +80,18 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
     } catch (error) {
         next(error);
     }
+};
+
+// Get current logged in user
+export const getMe = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const user = await User.findById(req.user!._id);
+
+    res.status(200).json({
+      success: true,
+      data: user
+    });
+  } catch (error) {
+    next(error);
+  }
 };
