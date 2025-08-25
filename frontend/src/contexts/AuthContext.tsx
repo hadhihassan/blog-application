@@ -1,8 +1,14 @@
-'use client';
+"use client";
 
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { User } from '@/types';
-import api from '@/lib/axios';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+} from "react";
+import { User } from "@/types";
+import api from "@/lib/axios";
 
 interface AuthContextType {
   user: User | null;
@@ -24,19 +30,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   useEffect(() => {
     const initAuth = async () => {
-      if (typeof window !== 'undefined') {
-        const token = localStorage.getItem('token');
-        const userData = localStorage.getItem('user');
+      if (typeof window !== "undefined") {
+        const token = localStorage.getItem("token");
+        const userData = localStorage.getItem("user");
 
         if (token && userData) {
           try {
             // Verify token is still valid
-            const response = await api.get('/auth/me');
+            const response = await api.get("/auth/me");
             setUser(response.data.data);
           } catch (error) {
-            console.error('Token validation failed:', error);
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
+            console.error("Token validation failed:", error);
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
           }
         }
       }
@@ -48,33 +54,37 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const login = async (email: string, password: string) => {
     try {
-      const response = await api.post('/auth/login', { email, password });
+      const response = await api.post("/auth/login", { email, password });
       const { user, token } = response.data.data;
-      
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(user));
+
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
       setUser(user);
     } catch (error: any) {
-      throw new Error(error.response?.data?.message || 'Login failed');
+      throw new Error(error || "Login failed");
     }
   };
 
   const register = async (name: string, email: string, password: string) => {
     try {
-      const response = await api.post('/auth/register', { name, email, password });
+      const response = await api.post("/auth/register", {
+        name,
+        email,
+        password,
+      });
       const { user, token } = response.data.data;
 
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
       setUser(user);
     } catch (error: any) {
-      throw new Error(error.response?.data?.message || 'Registration failed');
+      throw new Error(error.response?.data?.message || "Registration failed");
     }
   };
 
   const logout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
     setUser(null);
   };
 
@@ -88,7 +98,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
+};
+
+// Add this helper function to check if user is admin
+export const useIsAdmin = () => {
+  const { user } = useAuth();
+  return user?.role === "admin";
 };

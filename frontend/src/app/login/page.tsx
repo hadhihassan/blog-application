@@ -1,11 +1,12 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Form, Input, Button, Card, message } from 'antd';
-import { UserOutlined, LockOutlined } from '@ant-design/icons';
-import Link from 'next/link';
-import { useAuth } from '@/contexts/AuthContext';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Form, Input, Button, Card, App } from "antd";
+import { UserOutlined, LockOutlined } from "@ant-design/icons";
+import Link from "next/link";
+import { useAuth } from "@/contexts/AuthContext";
+import { emailRules, passwordRules } from "@/validations/authValidations";
 
 interface LoginForm {
   email: string;
@@ -17,12 +18,14 @@ export default function Login() {
   const { login } = useAuth();
   const router = useRouter();
 
+  const { message } = App.useApp();
+
   const onFinish = async (values: LoginForm) => {
     setLoading(true);
     try {
-      const data = await login(values.email, values.password);
-      message.success('Login successful!');
-      router.push('/dashboard');
+      await login(values.email, values.password);
+      message.success("Login successful!");
+      router.push("/dashboard");
     } catch (error: any) {
       message.error(error.message);
     } finally {
@@ -42,34 +45,27 @@ export default function Login() {
           <Form.Item
             label="Email"
             name="email"
-            rules={[
-              { required: true, message: 'Please input your email!' },
-              { type: 'email', message: 'Please enter a valid email!' }
-            ]}
+            rules={emailRules}
           >
-            <Input 
-              prefix={<UserOutlined />} 
-              placeholder="Email" 
-              size="large"
-            />
+            <Input prefix={<UserOutlined />} placeholder="Email" size="large" />
           </Form.Item>
 
           <Form.Item
             label="Password"
             name="password"
-            rules={[{ required: true, message: 'Please input your password!' }]}
+            rules={passwordRules}
           >
-            <Input.Password 
-              prefix={<LockOutlined />} 
-              placeholder="Password" 
+            <Input.Password
+              prefix={<LockOutlined />}
+              placeholder="Password"
               size="large"
             />
           </Form.Item>
 
           <Form.Item>
-            <Button 
-              type="primary" 
-              htmlType="submit" 
+            <Button
+              type="primary"
+              htmlType="submit"
               loading={loading}
               className="w-full"
               size="large"
@@ -79,7 +75,7 @@ export default function Login() {
           </Form.Item>
 
           <div className="text-center">
-            Don't have an account?{' '}
+            Don't have an account?{" "}
             <Link href="/register" className="text-blue-600 hover:underline">
               Register here
             </Link>

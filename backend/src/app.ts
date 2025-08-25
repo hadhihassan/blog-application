@@ -5,6 +5,8 @@ import { connectDB } from './config/db';
 import { config } from './config/env';
 
 import authRoutes from './routes/auth';
+import userRoutes from './routes/users';
+import postRoutes from './routes/posts';
 
 import errorHandler from './middleware/errorHandler';
 
@@ -21,6 +23,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/posts', postRoutes);
 
 app.use(errorHandler);
 

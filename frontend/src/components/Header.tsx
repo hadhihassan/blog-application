@@ -1,9 +1,13 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { useAuth } from '@/contexts/AuthContext';
-import { Button, Dropdown, Space, Avatar } from 'antd';
-import { UserOutlined, LogoutOutlined, DashboardOutlined } from '@ant-design/icons';
+import Link from "next/link";
+import { useAuth } from "@/contexts/AuthContext";
+import { Button, Dropdown, Space, Avatar } from "antd";
+import {
+  UserOutlined,
+  LogoutOutlined,
+  DashboardOutlined,
+} from "@ant-design/icons";
 
 const Header = () => {
   const { user, logout } = useAuth();
@@ -13,21 +17,30 @@ const Header = () => {
   };
 
   const menuItems = [
+    ...(user?.role === "admin"
+      ? [
+          {
+            key: "admin",
+            icon: <DashboardOutlined />,
+            label: <Link href="/admin">Admin Dashboard</Link>,
+          },
+        ]
+      : []),
     {
-      key: 'dashboard',
+      key: "dashboard",
       icon: <DashboardOutlined />,
       label: <Link href="/dashboard">Dashboard</Link>,
     },
     {
-      key: 'profile',
+      key: "profile",
       icon: <UserOutlined />,
       label: <Link href="/profile">Profile</Link>,
     },
     {
-      type: 'divider' as const,
+      type: "divider" as const,
     },
     {
-      key: 'logout',
+      key: "logout",
       icon: <LogoutOutlined />,
       label: <span onClick={handleLogout}>Logout</span>,
     },
@@ -51,12 +64,14 @@ const Header = () => {
             </nav>
           </div>
 
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-4 hover:cursor-pointer">
             {user ? (
               <Dropdown menu={{ items: menuItems }} placement="bottomRight">
                 <Space>
                   <Avatar icon={<UserOutlined />} />
-                  <span className="text-sm text-gray-700">Hello, {user.name}</span>
+                  <span className="text-sm text-gray-700">
+                    Hello, {user.name}
+                  </span>
                 </Space>
               </Dropdown>
             ) : (

@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Button, List, Skeleton, message } from 'antd';
+import { App, Button, List, Skeleton } from 'antd';
 import { Post } from '@/types';
-// import PostCard from '@/components/PostCard';
+import PostCard from '@/components/PostCard';
 import api from '@/lib/axios';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -12,6 +12,7 @@ export default function Home() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
+  const { message } = App.useApp();
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -25,7 +26,7 @@ export default function Home() {
       }
     };
 
-    // fetchPosts();
+    fetchPosts();
   }, []);
 
   const handleDelete = async (id: string) => {
@@ -78,9 +79,9 @@ export default function Home() {
           />
         ) : (
           <div className="grid gap-6">
-            {/* {posts.map((post) => (
+            {posts.map((post) => (
               <PostCard key={post._id} post={post} onDelete={handleDelete} />
-            ))} */}
+            ))}
           </div>
         )}
       </div>
