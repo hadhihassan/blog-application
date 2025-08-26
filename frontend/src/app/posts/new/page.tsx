@@ -26,7 +26,11 @@ export default function NewPost() {
       message.success("Post created successfully!");
       router.push("/dashboard");
     } catch (error) {
-      message.error("Failed to create post");
+       message.error(
+        typeof error === "object" && error !== null && "message" in error
+          ? (error as { message: string }).message
+          : "Failed to create post"
+      );
     } finally {
       setLoading(false);
     }

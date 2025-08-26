@@ -40,8 +40,8 @@ export const postUpdateSchema = [
 ];
 
 export const paramsIdSchema = [
-  param("id")
-    .trim()
-    .notEmpty().withMessage("Idis required")
-    .isMongoId().withMessage("Invalid ID"),
+    param("id")
+        .trim()
+        .notEmpty().withMessage("Idis required")
+        .isMongoId().withMessage("Invalid ID"),
 ];

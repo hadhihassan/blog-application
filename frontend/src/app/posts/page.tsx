@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -21,7 +22,11 @@ export default function Posts() {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const params: any = {
+        const params: {
+          page: number;
+          limit: number;
+          title?: string;
+        } = {
           page: currentPage,
           limit: pageSize,
         };
@@ -34,7 +39,11 @@ export default function Posts() {
         setPosts(response.data.data);
         setTotal(response.data.count);
       } catch (error) {
-        message.error('Failed to fetch posts');
+         message.error(
+        typeof error === "object" && error !== null && "message" in error
+          ? (error as { message: string }).message
+          : "Failed to fetch post"
+      );
       } finally {
         setLoading(false);
       }

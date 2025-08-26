@@ -2,11 +2,10 @@
 
 import { useParams, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { Button, Skeleton, App } from 'antd';
+import { Button, Skeleton, App, Modal } from 'antd';
 import { EditOutlined, DeleteOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import Link from 'next/link';
 import { Post } from '@/types';
-import ProtectedRoute from '@/components/Auth/ProtectedRoute';
 import { useAuth } from '@/contexts/AuthContext';
 import api from '@/lib/axios';
 
@@ -16,7 +15,9 @@ export default function PostDetail() {
   const { user } = useAuth();
   const [post, setPost] = useState<Post | null>(null);
   const [loading, setLoading] = useState(true);
-  const { message } = App.useApp();
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const { modal, message } = App.useApp();
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -24,7 +25,11 @@ export default function PostDetail() {
         const response = await api.get(`/posts/${params.id}`);
         setPost(response.data.data);
       } catch (error) {
-        message.error('Failed to fetch post');
+        message.error(
+          typeof error === "object" && error !== null && "message" in error
+            ? (error as { message: string }).message
+            : "Failed to fetch post"
+        );
       } finally {
         setLoading(false);
       }
@@ -33,18 +38,32 @@ export default function PostDetail() {
     if (params.id) {
       fetchPost();
     }
-  }, [params.id]);
+  }, [message, params.id]);
+
+  const showDeleteModal = () => {
+    setDeleteModalVisible(true);
+  };
 
   const handleDelete = async () => {
-    if (confirm('Are you sure you want to delete this post?')) {
-      try {
-        await api.delete(`/posts/${params.id}`);
-        message.success('Post deleted successfully');
-        router.push('/posts');
-      } catch (error) {
-        message.error('Failed to delete post');
-      }
+    setDeleting(true);
+    try {
+      await api.delete(`/posts/${params.id}`);
+      message.success('Post deleted successfully');
+      router.push('/posts');
+    } catch (error) {
+      message.error(
+        typeof error === "object" && error !== null && "message" in error
+          ? (error as { message: string }).message
+          : "Failed to delete post"
+      );
+    } finally {
+      setDeleting(false);
+      setDeleteModalVisible(false);
     }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteModalVisible(false);
   };
 
   if (loading) {
@@ -91,7 +110,8 @@ export default function PostDetail() {
                 <Button 
                   icon={<DeleteOutlined />} 
                   danger 
-                  onClick={handleDelete}
+                  onClick={showDeleteModal}
+                  loading={deleting}
                 >
                   Delete
                 </Button>
@@ -112,6 +132,24 @@ export default function PostDetail() {
           </p>
         </div>
       </article>
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        title="Delete Post"
+        open={deleteModalVisible}
+        onOk={handleDelete}
+        onCancel={handleDeleteCancel}
+        okText="Delete"
+        cancelText="Cancel"
+        okButtonProps={{ 
+          danger: true, 
+          loading: deleting,
+          icon: <DeleteOutlined />
+        }}
+        confirmLoading={deleting}
+      >
+        <p>Are you sure you want to delete this post? This action cannot be undone.</p>
+      </Modal>
     </div>
   );
 }

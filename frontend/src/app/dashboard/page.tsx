@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 import { useState, useEffect } from "react";
@@ -20,6 +21,7 @@ export default function Dashboard() {
         const response = await api.get("/posts/user/posts");
         setPosts(response.data.data);
       } catch (error) {
+        console.error("Error fetching user posts:", error);
         message.error("Failed to fetch your posts");
       } finally {
         setLoading(false);
@@ -35,6 +37,7 @@ export default function Dashboard() {
       setPosts(posts.filter((post) => post._id !== id));
       message.success("Post deleted successfully");
     } catch (error) {
+      console.error("Error delete post posts:", error);
       message.error("Failed to delete post");
     }
   };

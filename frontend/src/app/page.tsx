@@ -1,12 +1,13 @@
-'use client';
+/* eslint-disable react-hooks/exhaustive-deps */
+"use client";
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { App, Button, List, Skeleton } from 'antd';
-import { Post } from '@/types';
-import PostCard from '@/components/PostCard';
-import api from '@/lib/axios';
-import { useAuth } from '@/contexts/AuthContext';
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { App, Button, List, Skeleton } from "antd";
+import { Post } from "@/types";
+import PostCard from "@/components/PostCard";
+import api from "@/lib/axios";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function Home() {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -17,10 +18,14 @@ export default function Home() {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await api.get('/posts?limit=3');
+        const response = await api.get("/posts?limit=3");
         setPosts(response.data.data);
       } catch (error) {
-        message.error('Failed to fetch posts');
+        message.error(
+          typeof error === "object" && error !== null && "message" in error
+            ? (error as { message: string }).message
+            : "Failed to fetch posts"
+        );
       } finally {
         setLoading(false);
       }
@@ -32,10 +37,14 @@ export default function Home() {
   const handleDelete = async (id: string) => {
     try {
       await api.delete(`/posts/${id}`);
-      setPosts(posts.filter(post => post._id !== id));
-      message.success('Post deleted successfully');
+      setPosts(posts.filter((post) => post._id !== id));
+      message.success("Post deleted successfully");
     } catch (error) {
-      message.error('Failed to delete post');
+      message.error(
+        typeof error === "object" && error !== null && "message" in error
+          ? (error as { message: string }).message
+          : "Failed to delete post"
+      );
     }
   };
 
@@ -48,15 +57,19 @@ export default function Home() {
         <p className="text-xl text-gray-600 mb-8">
           Discover amazing stories and share your thoughts with the world.
         </p>
-        
+
         {user ? (
           <Link href="/posts/new">
-            <Button type="primary" size="large">Create New Post</Button>
+            <Button type="primary" size="large">
+              Create New Post
+            </Button>
           </Link>
         ) : (
           <div className="space-x-4">
             <Link href="/register">
-              <Button type="primary" size="large">Get Started</Button>
+              <Button type="primary" size="large">
+                Get Started
+              </Button>
             </Link>
             <Link href="/posts">
               <Button size="large">Browse Posts</Button>

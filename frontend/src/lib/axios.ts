@@ -22,12 +22,23 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      window.location.href = '/login';
+    if (error.response) {
+      const { data, status } = error.response;
+      
+      if (status === 401) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        window.location.href = "/login";
+      }
+        console.log(data);
+        
+        return Promise.reject({
+        message: data.message || "Something went wrong",
+        errors: data.errors || [],
+        status,
+      });
     }
-    return Promise.reject(error);
+    return Promise.reject(error.message || "Network error");
   }
 );
 

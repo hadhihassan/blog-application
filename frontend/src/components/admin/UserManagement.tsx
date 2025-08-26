@@ -1,10 +1,16 @@
-'use client';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable react-hooks/exhaustive-deps */
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Table, Button, Space, Tag, Modal, Input, App, Form } from 'antd';
-import { DeleteOutlined, SearchOutlined, PlusOutlined } from '@ant-design/icons';
-import { User } from '@/types';
-import api from '../../lib/axios';
+import { useState, useEffect } from "react";
+import { Table, Button, Space, Tag, Modal, Input, App, Form } from "antd";
+import {
+  DeleteOutlined,
+  SearchOutlined,
+  PlusOutlined,
+} from "@ant-design/icons";
+import { User } from "@/types";
+import api from "../../lib/axios";
 
 const { Column } = Table;
 
@@ -13,13 +19,13 @@ interface CreateUserForm {
   email: string;
   password: string;
   confirmPassword: string;
-  role: 'admin' | 'user';
+  role: "admin" | "user";
 }
 
 export default function UserManagement() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchText, setSearchText] = useState('');
+  const [searchText, setSearchText] = useState("");
   const [createModalVisible, setCreateModalVisible] = useState(false);
   const [createLoading, setCreateLoading] = useState(false);
   const [form] = Form.useForm();
@@ -31,10 +37,11 @@ export default function UserManagement() {
 
   const fetchUsers = async () => {
     try {
-      const response = await api.get('/users');
+      const response = await api.get("/admin/all-users");
       setUsers(response.data.data);
     } catch (error) {
-      messageApi.error('Failed to fetch users');
+      console.log(error);
+      messageApi.error("Failed to fetch users");
     } finally {
       setLoading(false);
     }
@@ -42,20 +49,24 @@ export default function UserManagement() {
 
   const handleCreateUser = async (values: CreateUserForm) => {
     if (values.password !== values.confirmPassword) {
-      messageApi.error('Passwords do not match!');
+      messageApi.error("Passwords do not match!");
       return;
     }
 
     setCreateLoading(true);
     try {
       const { confirmPassword, ...userData } = values;
-      await api.post('/auth/register', userData);
-      messageApi.success('User created successfully');
+      await api.post("/auth/register", userData);
+      messageApi.success("User created successfully");
       setCreateModalVisible(false);
       form.resetFields();
       fetchUsers();
-    } catch (error: any) {
-      messageApi.error(error.response?.data?.message || 'Failed to create user');
+    } catch (error) {
+      console.log(error);
+      const err = error as { response?: { data?: { message?: string } } };
+      messageApi.error(
+        err.response?.data?.message || "Failed to create user"
+      );
     } finally {
       setCreateLoading(false);
     }
@@ -63,36 +74,41 @@ export default function UserManagement() {
 
   const handleDeleteUser = async (userId: string) => {
     modal.confirm({
-      title: 'Are you sure you want to delete this user?',
-      content: 'This action cannot be undone and will delete all posts by this user.',
-      okText: 'Yes, Delete',
-      okType: 'danger',
-      cancelText: 'Cancel',
+      title: "Are you sure you want to delete this user?",
+      content:
+        "This action cannot be undone and will delete all posts by this user.",
+      okText: "Yes, Delete",
+      okType: "danger",
+      cancelText: "Cancel",
       onOk: async () => {
         try {
-          await api.delete(`/users/${userId}`);
-          messageApi.success('User deleted successfully');
+          await api.delete(`/admin/user/${userId}`);
+          messageApi.success("User deleted successfully");
           fetchUsers();
         } catch (error) {
-          messageApi.error('Failed to delete user');
+          messageApi.error("Failed to delete user");
         }
       },
     });
   };
 
-  const handleRoleChange = async (userId: string, newRole: 'admin' | 'user') => {
+  const handleRoleChange = async (
+    userId: string,
+    newRole: "admin" | "user"
+  ) => {
     try {
-      await api.put(`/users/${userId}`, { role: newRole });
-      messageApi.success('User role updated successfully');
+      await api.put(`/admin/user/${userId}`, { role: newRole });
+      messageApi.success("User role updated successfully");
       fetchUsers();
     } catch (error) {
-      messageApi.error('Failed to update user role');
+      messageApi.error("Failed to update user role");
     }
   };
 
-  const filteredUsers = users.filter(user =>
-    user.name.toLowerCase().includes(searchText.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchText.toLowerCase())
+  const filteredUsers = users.filter(
+    (user) =>
+      user.name.toLowerCase().includes(searchText.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchText.toLowerCase())
   );
 
   return (
@@ -127,7 +143,7 @@ export default function UserManagement() {
           dataIndex="role"
           key="role"
           render={(role: string) => (
-            <Tag color={role === 'admin' ? 'red' : 'blue'}>
+            <Tag color={role === "admin" ? "red" : "blue"}>
               {role.toUpperCase()}
             </Tag>
           )}
@@ -145,12 +161,14 @@ export default function UserManagement() {
             <Space size="middle">
               <Button
                 size="small"
-                onClick={() => handleRoleChange(
-                  record._id,
-                  record.role === 'admin' ? 'user' : 'admin'
-                )}
+                onClick={() =>
+                  handleRoleChange(
+                    record._id,
+                    record.role === "admin" ? "user" : "admin"
+                  )
+                }
               >
-                {record.role === 'admin' ? 'Make User' : 'Make Admin'}
+                {record.role === "admin" ? "Make User" : "Make Admin"}
               </Button>
               <Button
                 type="primary"
@@ -185,7 +203,7 @@ export default function UserManagement() {
           <Form.Item
             label="Name"
             name="name"
-            rules={[{ required: true, message: 'Please input the name!' }]}
+            rules={[{ required: true, message: "Please input the name!" }]}
           >
             <Input />
           </Form.Item>
@@ -194,8 +212,8 @@ export default function UserManagement() {
             label="Email"
             name="email"
             rules={[
-              { required: true, message: 'Please input the email!' },
-              { type: 'email', message: 'Please enter a valid email!' }
+              { required: true, message: "Please input the email!" },
+              { type: "email", message: "Please enter a valid email!" },
             ]}
           >
             <Input />
@@ -204,7 +222,7 @@ export default function UserManagement() {
           <Form.Item
             label="Password"
             name="password"
-            rules={[{ required: true, message: 'Please input the password!' }]}
+            rules={[{ required: true, message: "Please input the password!" }]}
           >
             <Input.Password />
           </Form.Item>
@@ -212,18 +230,16 @@ export default function UserManagement() {
           <Form.Item
             label="Confirm Password"
             name="confirmPassword"
-            rules={[{ required: true, message: 'Please confirm the password!' }]}
+            rules={[
+              { required: true, message: "Please confirm the password!" },
+            ]}
           >
             <Input.Password />
           </Form.Item>
 
           <Form.Item>
             <Space>
-              <Button
-                type="primary"
-                htmlType="submit"
-                loading={createLoading}
-              >
+              <Button type="primary" htmlType="submit" loading={createLoading}>
                 Create User
               </Button>
               <Button

@@ -40,8 +40,12 @@ export default function Register() {
       await register(values.name, values.email, values.password);
       message.success("Registration successful!");
       router.push("/dashboard");
-    } catch (error: any) {
-      message.error(error.message);
+    } catch (error) {
+      message.error(
+        typeof error === "object" && error !== null && "message" in error
+          ? (error as { message: string }).message
+          : "Failed to register"
+      );
     } finally {
       setLoading(false);
     }

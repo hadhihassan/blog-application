@@ -24,7 +24,7 @@ export const passwordRules: Rule[] = [
 ];
 
 // Confirm password validation (depends on password field)
-export const confirmPasswordRules = ({ getFieldValue }: any): Rule[] => [
+export const confirmPasswordRules = ({ getFieldValue }: { getFieldValue: (message:string) => void }): Rule[] => [
   { required: true, message: "Please confirm your password!" },
   {
     validator(_, value) {

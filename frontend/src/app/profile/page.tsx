@@ -7,13 +7,10 @@ import ProtectedRoute from "@/components/Auth/ProtectedRoute";
 import { useAuth } from "@/contexts/AuthContext";
 import api from "@/lib/axios";
 import {
-  confirmPasswordRules,
   emailRules,
   nameRules,
   passwordRules,
 } from "@/validations/authValidations";
-import { useForm } from "antd/es/form/Form";
-import { RegisterForm } from "../register/page";
 
 interface ProfileForm {
   name: string;
@@ -36,13 +33,15 @@ export default function Profile() {
   const onProfileFinish = async (values: ProfileForm) => {
     setLoading(true);
     try {
-      await api.put("/auth/updatedetails", values);
+      await api.put("/user/updatedetails", values);
       message.success("Profile updated successfully!");
       // Refresh the page to get updated user data
       window.location.reload();
-    } catch (error: any) {
+    } catch (error) {
       message.error(
-        error.response?.data?.message || "Failed to update profile"
+        typeof error === "object" && error !== null && "message" in error
+          ? (error as { message: string }).message
+          : "Failed to update profile"
       );
     } finally {
       setLoading(false);
@@ -57,14 +56,16 @@ export default function Profile() {
 
     setPasswordLoading(true);
     try {
-      await api.put("/auth/updatepassword", {
+      await api.put("/user/updatepassword", {
         currentPassword: values.currentPassword,
         newPassword: values.newPassword,
       });
       message.success("Password updated successfully!");
-    } catch (error: any) {
+    } catch (error) {
       message.error(
-        error.response?.data?.message || "Failed to update password"
+        typeof error === "object" && error !== null && "message" in error
+          ? (error as { message: string }).message
+          : "Failed to update password"
       );
     } finally {
       setPasswordLoading(false);

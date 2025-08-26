@@ -1,7 +1,6 @@
 'use client';
 
-import { useState } from 'react';
-import { Tabs, Card, message } from 'antd';
+import { Tabs, Card } from 'antd';
 import { UserOutlined, FileTextOutlined } from '@ant-design/icons';
 import ProtectedRoute from '@/components/Auth/ProtectedRoute';
 import UserManagement from '@/components/admin/UserManagement';

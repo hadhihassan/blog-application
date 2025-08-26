@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 import { config } from "./env";
-import user from '../models/User'
 
 export const connectDB = async () => {
     mongoose.connect(config.mongoUri as string)

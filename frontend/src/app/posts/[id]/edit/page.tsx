@@ -1,12 +1,13 @@
-'use client';
+"use client";
 
-import { useParams, useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
-import { Form, Input, Button, Card, App, Skeleton } from 'antd';
-import { SaveOutlined, ArrowLeftOutlined } from '@ant-design/icons';
-import ProtectedRoute from '@/components/Auth/ProtectedRoute';
-import { useAuth } from '@/contexts/AuthContext';
-import api from '@/lib/axios';
+import { useParams, useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { Form, Input, Button, Card, App, Skeleton } from "antd";
+import { SaveOutlined, ArrowLeftOutlined } from "@ant-design/icons";
+import ProtectedRoute from "@/components/Auth/ProtectedRoute";
+import { useAuth } from "@/contexts/AuthContext";
+import api from "@/lib/axios";
+import { Post } from "@/types";
 
 const { TextArea } = Input;
 
@@ -19,12 +20,11 @@ export default function EditPost() {
   const params = useParams();
   const router = useRouter();
   const { user } = useAuth();
-  const [post, setPost] = useState<any>(null);
+  const [post, setPost] = useState<Post | null>(null);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
   const [form] = Form.useForm();
   const { message } = App.useApp();
-
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -32,24 +32,28 @@ export default function EditPost() {
         const response = await api.get(`/posts/${params.id}`);
         const postData = response.data.data;
         setPost(postData);
-        
+
         const isAuthor = user && user._id === postData.author._id;
-        const isAdmin = user && user.role === 'admin';
-        
+        const isAdmin = user && user.role === "admin";
+
         if (!isAuthor && !isAdmin) {
-          message.error('You are not authorized to edit this post');
-          router.push('/posts');
+          message.error("You are not authorized to edit this post");
+          router.push("/posts");
           return;
         }
-        
+
         // Set form values
         form.setFieldsValue({
           title: postData.title,
           content: postData.content,
         });
       } catch (error) {
-        message.error('Failed to fetch post');
-        router.push('/posts');
+        message.error(
+          typeof error === "object" && error !== null && "message" in error
+            ? (error as { message: string }).message
+            : "Failed to fetch post"
+        );
+        router.push("/posts");
       } finally {
         setLoading(false);
       }
@@ -58,16 +62,20 @@ export default function EditPost() {
     if (params.id) {
       fetchPost();
     }
-  }, [params.id, user, router, form]);
+  }, [form, message, params.id, router, user]);
 
   const onFinish = async (values: PostForm) => {
     setUpdating(true);
     try {
       await api.put(`/posts/${params.id}`, values);
-      message.success('Post updated successfully!');
+      message.success("Post updated successfully!");
       router.push(`/posts/${params.id}`);
-    } catch (error: any) {
-      message.error(error.response?.data?.message || 'Failed to update post');
+    } catch (error) {
+      message.error(
+        typeof error === "object" && error !== null && "message" in error
+          ? (error as { message: string }).message
+          : "Failed to update post"
+      );
     } finally {
       setUpdating(false);
     }
@@ -77,8 +85,8 @@ export default function EditPost() {
     return (
       <ProtectedRoute>
         <div className="max-w-4xl mx-auto">
-          <Button 
-            icon={<ArrowLeftOutlined />} 
+          <Button
+            icon={<ArrowLeftOutlined />}
             onClick={() => router.back()}
             className="mb-4"
           >
@@ -94,8 +102,8 @@ export default function EditPost() {
     return (
       <ProtectedRoute>
         <div className="max-w-4xl mx-auto">
-          <Button 
-            icon={<ArrowLeftOutlined />} 
+          <Button
+            icon={<ArrowLeftOutlined />}
             onClick={() => router.back()}
             className="mb-4"
           >
@@ -112,8 +120,8 @@ export default function EditPost() {
   return (
     <ProtectedRoute>
       <div className="max-w-4xl mx-auto">
-        <Button 
-          icon={<ArrowLeftOutlined />} 
+        <Button
+          icon={<ArrowLeftOutlined />}
           onClick={() => router.back()}
           className="mb-4"
         >
@@ -132,8 +140,11 @@ export default function EditPost() {
               label="Title"
               name="title"
               rules={[
-                { required: true, message: 'Please input a title!' },
-                { max: 200, message: 'Title must be less than 200 characters!' }
+                { required: true, message: "Please input a title!" },
+                {
+                  max: 200,
+                  message: "Title must be less than 200 characters!",
+                },
               ]}
             >
               <Input placeholder="Post title" size="large" />
@@ -142,7 +153,7 @@ export default function EditPost() {
             <Form.Item
               label="Content"
               name="content"
-              rules={[{ required: true, message: 'Please input content!' }]}
+              rules={[{ required: true, message: "Please input content!" }]}
             >
               <TextArea
                 placeholder="Write your post content here..."
@@ -152,9 +163,9 @@ export default function EditPost() {
             </Form.Item>
 
             <Form.Item>
-              <Button 
-                type="primary" 
-                htmlType="submit" 
+              <Button
+                type="primary"
+                htmlType="submit"
                 loading={updating}
                 icon={<SaveOutlined />}
                 size="large"

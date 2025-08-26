@@ -1,7 +1,8 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 import { useState, useEffect } from "react";
-import { Table, Button, Space, Modal, App, Input } from "antd";
+import { Table, Button, Space, App, Input } from "antd";
 import { DeleteOutlined, SearchOutlined, EyeOutlined } from "@ant-design/icons";
 import Link from "next/link";
 import { Post, User } from "@/types";
@@ -14,7 +15,7 @@ export default function PostManagement() {
   const [loading, setLoading] = useState(true);
   const [searchText, setSearchText] = useState("");
 
-  const { message } = App.useApp();
+  const { message, modal } = App.useApp();
 
   useEffect(() => {
     fetchPosts();
@@ -25,14 +26,18 @@ export default function PostManagement() {
       const response = await api.get("/posts?limit=100");
       setPosts(response.data.data);
     } catch (error) {
-      message.error("Failed to fetch posts");
+      message.error(
+        typeof error === "object" && error !== null && "message" in error
+          ? (error as { message: string }).message
+          : "Failed to fetch post"
+      );
     } finally {
       setLoading(false);
     }
   };
 
   const handleDeletePost = async (postId: string) => {
-    Modal.confirm({
+    modal.confirm({
       title: "Are you sure you want to delete this post?",
       content: "This action cannot be undone.",
       okText: "Yes, Delete",
@@ -44,6 +49,7 @@ export default function PostManagement() {
           message.success("Post deleted successfully");
           fetchPosts();
         } catch (error) {
+          console.log(error);
           message.error("Failed to delete post");
         }
       },

@@ -7,6 +7,7 @@ import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { emailRules, passwordRules } from "@/validations/authValidations";
+import { RegisterForm } from "../register/page";
 
 interface LoginForm {
   email: string;
@@ -20,14 +21,20 @@ export default function Login() {
 
   const { message } = App.useApp();
 
+  const [form] = Form.useForm<RegisterForm>();
+
   const onFinish = async (values: LoginForm) => {
     setLoading(true);
     try {
       await login(values.email, values.password);
       message.success("Login successful!");
       router.push("/dashboard");
-    } catch (error: any) {
-      message.error(error.message);
+    } catch (error :unknown) {
+      message.error(
+        typeof error === "object" && error !== null && "message" in error
+          ? (error as { message: string }).message
+          : "Something went wrong"
+      );
     } finally {
       setLoading(false);
     }
@@ -37,24 +44,17 @@ export default function Login() {
     <div className="max-w-md mx-auto">
       <Card title="Login" className="shadow-md">
         <Form
+          form={form}
           name="login"
           onFinish={onFinish}
           autoComplete="off"
           layout="vertical"
         >
-          <Form.Item
-            label="Email"
-            name="email"
-            rules={emailRules}
-          >
+          <Form.Item label="Email" name="email" rules={emailRules}>
             <Input prefix={<UserOutlined />} placeholder="Email" size="large" />
           </Form.Item>
 
-          <Form.Item
-            label="Password"
-            name="password"
-            rules={passwordRules}
-          >
+          <Form.Item label="Password" name="password" rules={passwordRules}>
             <Input.Password
               prefix={<LockOutlined />}
               placeholder="Password"
@@ -75,7 +75,7 @@ export default function Login() {
           </Form.Item>
 
           <div className="text-center">
-            Don't have an account?{" "}
+            Dont have an account?{" "}
             <Link href="/register" className="text-blue-600 hover:underline">
               Register here
             </Link>
