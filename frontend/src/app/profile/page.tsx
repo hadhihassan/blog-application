@@ -35,7 +35,6 @@ export default function Profile() {
     try {
       await api.put("/users/updatedetails", values);
       message.success("Profile updated successfully!");
-      // Refresh the page to get updated user data
       window.location.reload();
     } catch (error) {
       message.error(
