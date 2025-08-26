@@ -13,7 +13,6 @@ A full-stack Blog Application built with **Next.js**, **Express.js**, **Node.js*
 6. [GitHub Repository](#github-repository)
 7. [Deployment](#deployment)
 8. [Live Demo](#live-demo)
-9. [GitHub Repository](#github-repository)
 ---
 
 ## Project Overview
@@ -129,3 +128,4 @@ npm start
 * **GitHub Repository:** [https://github.com/hadhihassan/blog-application](https://github.com/hadhihassan/blog-application)
 
 ---
+
