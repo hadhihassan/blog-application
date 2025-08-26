@@ -82,7 +82,7 @@ export default function UserManagement() {
       cancelText: "Cancel",
       onOk: async () => {
         try {
-          await api.delete(`/admin/user/${userId}`);
+          await api.delete(`/admin/users/${userId}`);
           messageApi.success("User deleted successfully");
           fetchUsers();
         } catch (error) {
@@ -97,7 +97,7 @@ export default function UserManagement() {
     newRole: "admin" | "user"
   ) => {
     try {
-      await api.put(`/admin/user/${userId}`, { role: newRole });
+      await api.put(`/admin/users/${userId}`, { role: newRole });
       messageApi.success("User role updated successfully");
       fetchUsers();
     } catch (error) {
