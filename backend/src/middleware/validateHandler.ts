@@ -5,8 +5,8 @@ export function validateHandler(req: Request, res: Response, next: NextFunction)
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         const extractedErrors = errors.array().map(err => ({
-            field: err.param,
-            message: err.msg
+            field: (err as any).param,
+            message: err?.msg
         }));
         return res.status(400).json({ success: false, errors: extractedErrors });
     }

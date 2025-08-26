@@ -1,11 +1,10 @@
 import jwt from "jsonwebtoken";
 import { config } from "../config/env";
 
-const generateToken = (
-  id: string
-): string => {
+const generateToken = (id: string): string => {
   const secret = config.jwtSecret ?? "default_secret";
-  const expiresIn = config.jwtExpire ?? "7d";
+  
+  const expiresIn = (config.jwtExpire ?? "7d") as jwt.SignOptions["expiresIn"];
 
   return jwt.sign({ id }, secret, { expiresIn });
 };
