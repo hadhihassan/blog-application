@@ -87,7 +87,7 @@ export default function Register() {
             name="confirmPassword"
             dependencies={["password"]}
             hasFeedback
-            rules={confirmPasswordRules({ getFieldValue: form.getFieldValue })}
+            rules={confirmPasswordRules({ getFieldValue: form.getFieldValue }) }
           >
             <Input.Password
               prefix={<LockOutlined />}

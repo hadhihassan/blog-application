@@ -1,5 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Rule } from "antd/es/form";
-import { StoreValue } from "antd/es/form/interface";
 
 // Name validation
 export const nameRules: Rule[] = [
@@ -25,16 +25,14 @@ export const passwordRules: Rule[] = [
 ];
 
 // Confirm password validation (depends on password field)
-export const confirmPasswordRules = ({ getFieldValue }: {
-  getFieldValue: (name: string) => StoreValue;
-}): Rule[] => [
-    { required: true, message: "Please confirm your password!" },
-    {
-      validator(_, value) {
-        if (!value || getFieldValue("password") === value) {
-          return Promise.resolve();
-        }
-        return Promise.reject(new Error("Passwords do not match!"));
-      },
+export const confirmPasswordRules = ({ getFieldValue }: any): Rule[] => [
+  { required: true, message: "Please confirm your password!" },
+  {
+    validator(_, value) {
+      if (!value || getFieldValue("password") === value) {
+        return Promise.resolve();
+      }
+      return Promise.reject(new Error("Passwords do not match!"));
     },
-  ];
+  },
+];
