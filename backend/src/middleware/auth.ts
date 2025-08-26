@@ -1,11 +1,12 @@
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import User from '../models/User';
 import { config } from '../config/env';
+import { AuthenticatedRequest } from '../types';
 
 
 export const protect = async (
-    req: Request,
+    req: AuthenticatedRequest,
     res: Response,
     next: NextFunction
 ) => {
@@ -50,7 +51,7 @@ export const protect = async (
 
 export const authorize = (...roles: string[]) => {
     return (
-        req: Request,
+        req: AuthenticatedRequest,
         res: Response,
         next: NextFunction
     ) => {

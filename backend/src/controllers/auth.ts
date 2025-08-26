@@ -85,7 +85,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
 // Get current logged in user
 export const getMe = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const user = await User.findById(req.user!._id);
+    const user = await User.findById(req?.user!._id);
 
     res.status(200).json({
       success: true,
@@ -104,7 +104,7 @@ export const updateDetails = async (req: Request, res: Response, next: NextFunct
       email: req.body.email
     };
 
-    const user = await User.findByIdAndUpdate(req.user!._id, fieldsToUpdate, {
+    const user = await User.findByIdAndUpdate(req?.user!._id, fieldsToUpdate, {
       new: true,
       runValidators: true
     });
@@ -121,7 +121,7 @@ export const updateDetails = async (req: Request, res: Response, next: NextFunct
 // Update password
 export const updatePassword = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const user = await User.findById(req.user!._id).select('+password');
+    const user = await User.findById(req?.user!._id).select('+password');
 
     const isMatch = await user!.comparePassword(req.body.currentPassword);
 
