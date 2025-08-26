@@ -33,7 +33,7 @@ export default function Profile() {
   const onProfileFinish = async (values: ProfileForm) => {
     setLoading(true);
     try {
-      await api.put("/user/updatedetails", values);
+      await api.put("/users/updatedetails", values);
       message.success("Profile updated successfully!");
       // Refresh the page to get updated user data
       window.location.reload();
@@ -56,7 +56,7 @@ export default function Profile() {
 
     setPasswordLoading(true);
     try {
-      await api.put("/user/updatepassword", {
+      await api.put("/users/updatepassword", {
         currentPassword: values.currentPassword,
         newPassword: values.newPassword,
       });
